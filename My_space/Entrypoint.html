@@ -3,158 +3,560 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>首页 - 我的个人网站</title>
+    <title>止席 - 个人主页</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "Microsoft Yahei", sans-serif;
+            font-family: "Microsoft Yahei", "PingFang SC", -apple-system, sans-serif;
         }
         body {
-            background-color: #121418;
+            background-color: #0a0e1a;
             color: #e5e7eb;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 24px;
+            min-height: 100vh;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ===== 开场涟漪遮罩 ===== */
+        #ripple-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #0a0e1a;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: overlayFadeOut 0.8s ease 2.2s forwards;
+        }
+        @keyframes overlayFadeOut {
+            to { opacity: 0; visibility: hidden; }
+        }
+        .ripple-center {
+            width: 8px;
+            height: 8px;
+            background: #60a5fa;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #60a5fa, 0 0 40px rgba(96,165,250,0.5);
+            animation: centerPulse 0.6s ease forwards;
+        }
+        @keyframes centerPulse {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .ripple-ring {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(96, 165, 250, 0.6);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: rippleExpand 1.8s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+        }
+        .ripple-ring:nth-child(2) { animation-delay: 0.2s; }
+        .ripple-ring:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes rippleExpand {
+            0% {
+                width: 20px;
+                height: 20px;
+                opacity: 1;
+                border-width: 2px;
+            }
+            100% {
+                width: 1200px;
+                height: 1200px;
+                opacity: 0;
+                border-width: 1px;
+            }
+        }
+
+        /* ===== 通用动画 ===== */
+        .anim-fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s ease forwards;
+        }
+        .anim-fade-in {
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+        }
+        .anim-slide-down {
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: slideDown 0.6s ease forwards;
+        }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        @keyframes slideDown {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== 导航栏 ===== */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 48px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(10, 14, 26, 0.85);
+            backdrop-filter: blur(12px);
+            animation-delay: 1.8s;
+        }
+        .nav-links {
+            display: flex;
+            gap: 36px;
+        }
+        .nav-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+            position: relative;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #60a5fa;
+        }
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #60a5fa;
+        }
+        .hamburger {
+            font-size: 22px;
+            cursor: pointer;
+            color: #d1d5db;
+            user-select: none;
+        }
+
+        /* ===== Hero 区域 ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 120px 80px 60px;
+            position: relative;
+            background:
+                linear-gradient(to right,
+                    rgba(10,14,26,0.95) 0%,
+                    rgba(10,14,26,0.85) 30%,
+                    rgba(10,14,26,0.5) 55%,
+                    rgba(10,14,26,0.2) 75%,
+                    rgba(10,14,26,0.05) 100%
+                ),
+                url('images/hero-bg.jpg') right center / cover no-repeat;
+            animation: heroFadeIn 1.5s ease 1.5s backwards;
+        }
+        @keyframes heroFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 80px;
+            width: 40px;
+            height: 2px;
+            background: #60a5fa;
+            animation: lineGrow 0.6s ease 2.2s backwards;
+        }
+        @keyframes lineGrow {
+            from { width: 0; opacity: 0; }
+            to { width: 40px; opacity: 1; }
+        }
+        .hero h1 {
+            font-size: 68px;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 28px;
+            color: #f0f6fc;
+        }
+        .hero h1 .greeting {
+            display: block;
+            font-size: 52px;
+            font-weight: 300;
+            color: #e5e7eb;
+            margin-bottom: 4px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s ease 2.0s forwards;
+        }
+        .hero h1 .name {
+            color: #60a5fa;
+        }
+        .hero h1 .main-title {
+            display: block;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s ease 2.3s forwards;
+        }
+        .hero .desc {
+            font-size: 17px;
+            color: #9ca3af;
+            max-width: 560px;
+            line-height: 1.9;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s ease 2.6s forwards;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 15%;
+            left: 80px;
+            width: 40px;
+            height: 2px;
+            background: #60a5fa;
+            animation: lineGrow 0.6s ease 2.8s backwards;
+        }
+
+        /* ===== 内容区域 ===== */
+        .content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 80px 48px 60px;
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 80px;
+        }
+
+        /* 区块标题 */
+        .section-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #f0f6fc;
+            margin-bottom: 6px;
+            padding-left: 14px;
+            border-left: 3px solid #60a5fa;
+            line-height: 1.2;
+        }
+        .section-subtitle {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 36px;
+            padding-left: 17px;
+        }
+
+        /* 快速导航卡片 */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.45);
+            border: 1px solid rgba(96, 165, 250, 0.15);
+            border-radius: 14px;
+            padding: 32px 26px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.7s ease forwards;
+        }
+        .card:nth-child(1) { animation-delay: 3.0s; }
+        .card:nth-child(2) { animation-delay: 3.2s; }
+        .card:nth-child(3) { animation-delay: 3.4s; }
+        .card:hover {
+            background: rgba(30, 41, 59, 0.75);
+            border-color: rgba(96, 165, 250, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(96, 165, 250, 0.1);
+        }
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: rgba(96, 165, 250, 0.1);
+            color: #60a5fa;
+            font-size: 22px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .card h3 {
+            font-size: 18px;
+            color: #f0f6fc;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .card p {
+            font-size: 13px;
+            color: #9ca3af;
             line-height: 1.7;
         }
-        nav {
-            margin-bottom: 48px;
-            border-bottom: 1px solid #272a33;
-            padding-bottom:10px;
-        }
-        nav a {
+        .card .arrow {
+            margin-top: 24px;
             color: #60a5fa;
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        .card:hover .arrow {
+            transform: translateX(6px);
+        }
+
+        /* 联系我 */
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 15px;
+            opacity: 0;
+            transform: translateX(20px);
+            animation: slideInRight 0.6s ease forwards;
+        }
+        .contact-item:nth-child(1) { animation-delay: 3.2s; }
+        .contact-item:nth-child(2) { animation-delay: 3.35s; }
+        .contact-item:nth-child(3) { animation-delay: 3.5s; }
+        .contact-item:nth-child(4) { animation-delay: 3.65s; }
+        .contact-item:nth-child(5) { animation-delay: 3.8s; }
+        .contact-item:nth-child(6) { animation-delay: 3.95s; }
+        @keyframes slideInRight {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .contact-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .contact-label {
+            color: #9ca3af;
+            min-width: 60px;
+        }
+        .contact-value {
+            color: #e5e7eb;
+        }
+        .contact-value a {
+            color: #e5e7eb;
             text-decoration: none;
-            font-size:18px;
-            margin-right:24px;
         }
-        nav a:hover {
-            text-decoration: underline;
+        .contact-value a:hover {
+            color: #60a5fa;
         }
-        h1 {
-            font-size:48px;
-            color:#ffffff;
-            margin-bottom:16px;
+
+        /* 内容区块标题动画 */
+        .section-title {
+            opacity: 0;
+            animation: fadeIn 0.8s ease 2.9s forwards;
         }
-        .desc {
-            font-size:18px;
-            color:#b4b9c3;
-            margin-bottom:48px;
+        .section-subtitle {
+            opacity: 0;
+            animation: fadeIn 0.8s ease 3.0s forwards;
         }
-        h2 {
-            font-size:28px;
-            color:#fff;
-            margin:32px 0 16px;
+
+        /* ===== 底部引用 ===== */
+        .footer-quote {
+            text-align: left;
+            padding: 60px 80px 40px;
+            font-size: 30px;
+            color: #6b7280;
+            font-family: "KaiTi", "STKaiti", "楷体", serif;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeIn 1s ease 4.2s forwards;
         }
-        /* 一级项目：我的代码项目 */
-        .nav-item {
-            font-size:19px;
-            margin:14px 0;
+        .footer-quote::before {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 2px;
+            background: #60a5fa;
+            margin-bottom: 24px;
         }
-        .nav-item a {
-            color:#60a5fa;
-            text-decoration:none;
+
+        /* ===== 页脚 ===== */
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 28px 48px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            font-size: 13px;
+            color: #6b7280;
+            opacity: 0;
+            animation: fadeIn 0.8s ease 4.5s forwards;
         }
-        .nav-item a:hover {
-            text-decoration:underline;
+        footer .footer-links a {
+            color: #6b7280;
+            text-decoration: none;
+            margin-left: 20px;
+            transition: color 0.3s;
         }
-        /* 二级：Gitee / GitHub */
-        .level2 {
-            margin-left: 24px;
-            font-size:18px;
-            margin:10px 0 10px 24px;
+        footer .footer-links a:hover {
+            color: #60a5fa;
         }
-        .level2 a{
-            color:#60a5fa;
-            text-decoration:none;
-        }
-        .level2 a:hover{
-            text-decoration:underline;
-        }
-        /* 三级：Gitee下面三个子仓库 */
-        .level3 {
-            margin-left:48px;
-            font-size:17px;
-            margin:8px 0 8px 48px;
-        }
-        .level3 a{
-            color:#60a5fa;
-            text-decoration:none;
-        }
-        .level3 a:hover{
-            text-decoration:underline;
-        }
-        .contact-line {
-            font-size:18px;
-            margin:8px 0;
-        }
-        .contact-line a {
-            color:#60a5fa;
-            text-decoration:none;
-        }
-        .contact-line a:hover {
-            text-decoration:underline;
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 900px) {
+            .hero { padding: 100px 32px 40px; }
+            .hero h1 { font-size: 42px; }
+            .hero h1 .greeting { font-size: 34px; }
+            .hero::before, .hero::after { left: 32px; }
+            .content { grid-template-columns: 1fr; gap: 48px; padding: 48px 24px; }
+            .cards { grid-template-columns: 1fr; }
+            nav { padding: 16px 24px; }
+            .nav-links { gap: 20px; }
+            .footer-quote { padding: 40px 32px 30px; font-size: 22px; }
+            footer { flex-direction: column; gap: 12px; padding: 20px 24px; }
         }
     </style>
 </head>
 <body>
-    <nav>
-        <a href="#">首页</a>
-        <a href="#">博客记录</a>
-        <a href="#">代码项目</a>
-        <a href="#">相册</a>
+
+    <!-- 开场涟漪动画 -->
+    <div id="ripple-overlay">
+        <div class="ripple-center"></div>
+        <div class="ripple-ring"></div>
+        <div class="ripple-ring"></div>
+        <div class="ripple-ring"></div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="anim-slide-down">
+        <div class="nav-links">
+            <a href="#" class="active">首页</a>
+            <a href="blog/index.html">博客记录</a>
+            <a href="project/index.html">代码项目</a>
+            <a href="images/photos.html">相册</a>
+        </div>
+        <div class="hamburger">☰</div>
     </nav>
 
-    <h1>你好，我是叶延锦</h1>
-    <p class="desc">
-        智能科学与技术专业在读，专注于计算机网络、编程开发与技术实践。<br>
-        这个网站用来记录我的博客记录、分享代码项目和日常照片。
-    </p>
+    <!-- Hero 主视觉区 -->
+    <section class="hero">
+        <h1>
+            <span class="greeting">你好，</span>
+            <span class="main-title">我是<span class="name">止席</span></span>
+        </h1>
+        <p class="desc">
+            智能科学与技术专业在读，专注于计算机网络、编程开发与技术实践。<br>
+            这个网站用来记录我的博客记录、分享代码项目和日常照片。
+        </p>
+    </section>
 
-    <h2>快速导航</h2>
-    <!-- 一级 -->
-    <div class="nav-item">
-        💻 我的代码项目
-    </div>
-    <!-- 二级 1.Gitee -->
-    <div class="level2">
-        1. <a href="https://gitee.com/qianmo1124">Gitee仓库</a>
-    </div>
-    <!-- 三级 Gitee子仓库 -->
-    <div class="level3">
-        - <a href="https://gitee.com/qianmo1124/c-language-code">C语言代码公开</a>
-    </div>
-    <div class="level3">
-        - <a href="https://gitee.com/qianmo1124/java">JAVA</a>
-    </div>
-    <div class="level3">
-        - <a href="https://gitee.com/qianmo1124/training-code">集训代码</a>
-    </div>
-    <!-- 二级 2.GitHub -->
-    <div class="level2">
-        2. <a href="https://github.com/2005QIANMO">GitHub仓库</a>
-    </div>
-    <!-- 三级 GitHub子仓库，后续你可以继续添加多个 -->
-    <div class="level3">
-        - <a href="https://github.com/2005QIANMO/JavaEE">GitHub项目</a>
-    </div>
+    <!-- 内容区 -->
+    <section class="content">
+        <!-- 快速导航 -->
+        <div>
+            <h2 class="section-title">快速导航</h2>
+            <p class="section-subtitle">QUICK NAVIGATION</p>
 
-    <div class="nav-item">
-        📖 <a href="https://blog.csdn.net/yeyanjin_?type=blog">博客记录</a>
-    </div>
-    <div class="nav-item">
-        📷 <a href="#">相册 - 生活与实验记录</a>
-    </div>
+            <div class="cards">
+                <a href="project/index.html" class="card">
+                    <div class="card-icon">&lt;/&gt;</div>
+                    <h3>我的代码项目</h3>
+                    <p>Gitee仓库 · GitHub仓库<br>Java · 其他代码</p>
+                    <div class="arrow">→</div>
+                </a>
+                <a href="blog/index.html" class="card">
+                    <div class="card-icon">📄</div>
+                    <h3>博客记录</h3>
+                    <p>技术 · 随笔 · 生活</p>
+                    <div class="arrow">→</div>
+                </a>
+                <a href="images/photos.html" class="card">
+                    <div class="card-icon">🖼️</div>
+                    <h3>相册</h3>
+                    <p>生活与实践记录</p>
+                    <div class="arrow">→</div>
+                </a>
+            </div>
+        </div>
 
+        <!-- 联系我 -->
+        <div>
+            <h2 class="section-title">联系我</h2>
+            <p class="section-subtitle">CONTACT ME</p>
 
-    <h2>联系我</h2>
-    <div class="contact-line">Gitee：<a href="https://gitee.com/qianmo1124">gitee.com/qianmo1124</a></div>
-    <div class="contact-line">GitHub：<a href="https://github.com/2005QIANMO">github.com/你的用户名</a></div>
-    <div class="contact-line">邮箱：2763783171@qq.com</div>
-    <div class="contact-line">QQ：2763783171</div>
-    <div class="contact-line">微信：yyj_1124_xxdskh</div>
-    <div class="contact-line">手机号：17806917351</div>
+            <div class="contact-list">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                        </svg>
+                    </div>
+                    <span class="contact-label">Gitee</span>
+                    <span class="contact-value"><a href="https://gitee.com/qianmo1124" target="_blank">qianmo1124</a></span>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                        </svg>
+                    </div>
+                    <span class="contact-label">GitHub</span>
+                    <span class="contact-value"><a href="https://github.com/2005QIANMO" target="_blank">github.com/2005QIANMO</a></span>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">✉️</div>
+                    <span class="contact-label">邮箱</span>
+                    <span class="contact-value">2763783171@qq.com</span>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">🐧</div>
+                    <span class="contact-label">QQ</span>
+                    <span class="contact-value">2763783171</span>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">💬</div>
+                    <span class="contact-label">微信</span>
+                    <span class="contact-value">yyj_1124_xxdskh</span>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon">📱</div>
+                    <span class="contact-label">手机号</span>
+                    <span class="contact-value">17806917351</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部手写引用 -->
+    <div class="footer-quote">无限进步。。。</div>
+
+    <!-- 页脚 -->
+    <footer>
+        <div>© 2026 止席 · 个人主页</div>
+        <div class="footer-links">
+            <a href="#">首页</a>
+            <a href="blog/index.html">博客记录</a>
+            <a href="project/index.html">代码项目</a>
+            <a href="images/photos.html">相册</a>
+        </div>
+    </footer>
+
 </body>
 </html>
