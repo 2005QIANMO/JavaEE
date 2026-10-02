@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猜数字</title>
+</head>
+
+<body>
+    <div style="margin:0 auto;width:500px;">
+        <button id="reset">重新开始一局游戏</button><br />
+        请输入要猜的数字：<input type="number" name="" id="inputNum">
+        <button id="guess">猜</button><br />
+        已经猜的次数：<span id="count">0</span><br />
+        结果：<span id="result"></span>
+    </div>
+    <script src="D:\JAVA\Code\JavaEE\jquery-4.0.0.min.js"></script>
+    <script>
+        let answer = Math.floor(Math.random() * 100) + 1;
+        let count = 0;
+        console.log(answer);
+        $("#guess").click(function () {
+            count++;
+            $("#count").text(count);
+            let inputNum = $("#inputNum").val();
+            if (inputNum > answer) {
+                $("#result").text("猜大了");
+                $("#result").css("color", "red");
+            }
+            else if (inputNum < answer) {
+                $("#result").text("猜小了");
+                $("#result").css("color", "yellow");
+            }
+            else {
+                $("#result").text("恭喜你猜对了");
+                $("#result").css("color", "green");
+            }
+        });
+        $("#reset").click(function () {
+            answer = Math.floor(Math.random() * 100) + 1;
+            count = 0;
+            $("#count").text(count);
+            $("#result").text("");
+            $("#inputNum").val("");
+
+        }); 
+    </script>
+</body>
+
+</html>
